@@ -9,16 +9,11 @@ class Order extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['customer_name', 'comment', 'status', 'total_price'];
+
     public function items()
     {
         return $this->hasMany(OrderItem::class);
-    }
-
-    // app/Models/Order.php
-
-    public function product()
-    {
-        return $this->belongsTo(Product::class);
     }
 
 }

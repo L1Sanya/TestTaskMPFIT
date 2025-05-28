@@ -34,6 +34,6 @@ Route::get('/', fn() => redirect('/products'));
 
 Route::resource('products', ProductController::class);
 Route::resource('orders', OrderController::class)->except(['edit', 'update', 'destroy']);
-Route::post('/orders/{order}/complete', [OrderController::class, 'complete'])->name('orders.complete');
+Route::patch('orders/{order}/complete', [OrderController::class, 'complete'])->name('orders.complete');
 
 require __DIR__.'/auth.php';

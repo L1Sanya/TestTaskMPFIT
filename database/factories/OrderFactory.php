@@ -21,7 +21,6 @@ class OrderFactory extends Factory
         $product = Product::inRandomOrder()->first() ?? Product::factory()->create();
 
         return [
-            'product_id' => $product->id,
             'customer_name' => $this->faker->name,
             'status' => $this->faker->randomElement(['new', 'completed']),
             'comment' => $this->faker->optional()->sentence,

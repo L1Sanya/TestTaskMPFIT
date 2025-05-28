@@ -15,7 +15,7 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders = Order::with('product')->get();
+        $orders = Order::with('items.product')->get();
         return view('orders.index', compact('orders'));
     }
 
@@ -29,8 +29,8 @@ class OrderController extends Controller
     {
         $request->validate([
             'customer_name' => 'required|string|max:255',
-            'product_id' => 'required|exists:products,id',
-            'quantity' => 'required|integer|min:1',
+            'products' => 'required|array',
+            'products.*' => 'integer|min:0',
             'comment' => 'nullable|string',
         ]);
 
@@ -38,29 +38,41 @@ class OrderController extends Controller
             $order = Order::create([
                 'customer_name' => $request->customer_name,
                 'comment' => $request->comment,
-                'status' => 'новый',
+                'status' => 'new',
+                'total_price' => 0,
             ]);
 
-            OrderItem::create([
-                'order_id' => $order->id,
-                'product_id' => $request->product_id,
-                'quantity' => $request->quantity,
-            ]);
+            $total = 0;
+
+            foreach ($request->products as $productId => $quantity) {
+                if ($quantity > 0) {
+                    $product = Product::findOrFail($productId);
+                    $total += $product->price * $quantity;
+
+                    $order->items()->create([
+                        'product_id' => $productId,
+                        'quantity' => $quantity,
+                    ]);
+                }
+            }
+
+            $order->update(['total_price' => $total]);
         });
 
-        return redirect()->route('orders.index')->with('success', 'Заказ добавлен');
+        return redirect()->back()->with('success', 'Заказ успешно создан');
     }
 
     public function show(Order $order)
     {
-        $order->load('product');
+        $order->load('items.product');
+
         return view('orders.show', compact('order'));
     }
 
 
     public function complete(Order $order)
     {
-        $order->update(['status' => 'выполнен']);
+        $order->update(['status' => 'completed']);
         return redirect()->route('orders.show', $order)->with('success', 'Статус обновлён');
     }
 }

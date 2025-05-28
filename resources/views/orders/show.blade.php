@@ -14,9 +14,10 @@
             <li>{{ $item->product->name }} x {{ $item->quantity }} = {{ ($item->product->price * $item->quantity) / 100 }} руб.</li>
         @endforeach
     </ul>
-    @if ($order->status == 'новый')
+    @if ($order->status == 'new')
         <form method="POST" action="{{ route('orders.complete', $order) }}">
-            @csrf @method('PATCH')
+            @csrf
+            @method('PATCH')
             <button type="submit">Отметить как выполненный</button>
         </form>
     @endif

@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id')->constrained()->onDelete('cascade');
             $table->string('customer_name');
             $table->enum('status', ['new', 'completed'])->default('new');
             $table->text('comment')->nullable();
